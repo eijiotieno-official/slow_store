@@ -1,44 +1,69 @@
 import 'dart:convert';
 import 'dart:io';
-
 import 'package:flutter/foundation.dart';
 import 'package:slow_store/src/utils.dart';
 
+/// The SlowStore class provides methods for creating and managing databases.
 class SlowStore {
+  /// Creates a new database with the specified name.
+  ///
+  /// If a database with the same name already exists, it will be opened.
+  ///
+  /// [name]: The name of the database file (e.g., 'my_database.json').
   static DataBase database({required String name}) {
     return DataBase(database: name);
   }
 }
 
+/// The DataBase class represents a database that contains multiple entries.
 class DataBase {
   final String database;
+
+  /// Creates a DataBase instance with the specified name.
+  ///
+  /// [database]: The name of the database file (e.g., 'my_database.json').
   DataBase({required this.database});
 
+  /// Creates a new Entry instance to work with individual data entries within the database.
+  ///
+  /// [id]: The optional ID for the entry. If not specified, a unique ID will be generated.
   Entry entry([String id = ""]) {
     return Entry(database: database, id: id);
   }
 
+  /// Deletes the entire database.
   void delete() async {
     await deleteFile(database: database);
   }
 
+  /// Renames the database to a new name.
+  ///
+  /// [newName]: The new name for the database.
   void rename({required String newName}) async {
     await renameFile(database: database, newName: newName);
   }
 }
 
+/// The Entry class represents an individual data entry within a database.
 class Entry {
   final String database;
   final String id;
 
+  /// Creates an Entry instance with the specified database name and entry ID.
   Entry({
     required this.database,
     required this.id,
   });
 
-  //Add data into the specified [database]
+  /// Adds data into the specified database.
+  ///
+  /// [data]: A map containing the data to be added.
+  ///
+  /// If [id] is not specified, a unique ID will be generated for the entry.
+  ///
+  /// Data types that cannot be encoded will be filtered out.
   Future<void> create({required Map<String, dynamic> data}) async {
-    //Get the file that hold data in the specified [database]
+    //Get the file that holds data in the specified [database]
     File? file = await databaseFile(database: database);
     if (file != null) {
       final content = await file.readAsString();
@@ -78,12 +103,12 @@ class Entry {
     }
   }
 
-  //Get a specific data is [id] is specified or return the all the data in the database if [id] is not specified
+  /// Get a specific data is [id] is specified or return the all the data in the database if [id] is not specified
   Future<dynamic> read() async {
     List<Map<String, dynamic>> results = [];
     Map<String, dynamic> result = {};
     bool entryExists = true;
-    //Get the file that hold data in the specified [database]
+    //Get the file that holds data in the specified [database]
     File? file = await databaseFile(database: database);
     if (file != null) {
       final content = await file.readAsString();
@@ -115,6 +140,9 @@ class Entry {
             : results;
   }
 
+  /// Update an existing data entry.
+  ///
+  /// [data]: A map containing the updated data.
   Future<void> update({required Map<String, dynamic> data}) async {
     if (id.isEmpty) {
       throw Exception("Entry id is empty");
@@ -163,6 +191,7 @@ class Entry {
     }
   }
 
+  /// Deletes the data entry.
   Future<void> delete() async {
     File? file = await databaseFile(database: database);
     if (file != null) {

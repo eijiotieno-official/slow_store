@@ -1,7 +1,8 @@
 name: slow_store
-description: A new Flutter package project.
-version: 0.0.1
-homepage:
+description: A local data storage solution for Flutter developers.
+version: 0.0.2
+homepage: https://github.com/eijiotieno-official/slow_store
+repository: https://github.com/eijiotieno-official/slow_store
 
 environment:
   sdk: '>=3.1.0 <4.0.0'
